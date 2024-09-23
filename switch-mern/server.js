@@ -14,7 +14,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 // Routes
 app.get('/', (req, res) => {
-    res.send('Welcome to the MERN app!');
+    res.send('Welcome to Switch!');
 });
 
 // Start the server

@@ -18,6 +18,7 @@ const About = () => {
         <b>Meet sellers and buyers</b> through our unique platform to help yourself{' '}
         <b>get rid of your previous semester's books, scientific instruments, calculators, and other material you have.</b>
       </h6>
+      <h5>Hop on the trend, Join us <a href="/register">Now!</a></h5>
     </div>
   );
 };
