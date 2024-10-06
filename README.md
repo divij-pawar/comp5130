@@ -22,7 +22,7 @@ $ npm install
 ### Start the server
 In $ ../comp5130/switch-mern
  ```bash
-$ npm run
+$ npm run dev
  ```
  ### Start the client
 In $../comp5130/switch-mern/client
