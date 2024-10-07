@@ -7,6 +7,7 @@ const RegisterComponent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  // eslint-disable-next-line
   const [errors, setErrors] = useState({ username: '', email: '', password: '', confirmPassword: '' });
 
   const handleSubmit = (e) => {

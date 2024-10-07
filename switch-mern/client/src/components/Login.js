@@ -6,6 +6,7 @@ const LoginComponent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
+  // eslint-disable-next-line
   const [errors, setErrors] = useState({ email: '', password: '' });
 
   const handleSubmit = (e) => {
