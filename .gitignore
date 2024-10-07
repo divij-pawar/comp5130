@@ -1,3 +1,4 @@
 switch-mern/client/node_modules/
 switch-mern/node_modules/
+switch-mern/uploads/*.jpg
 .env
