@@ -18,8 +18,7 @@ const Home = ({ posts, pagination }) => {
               <p>Date Posted: {new Date(post.date_posted).toLocaleDateString()}</p>
               <div className="post-author">
                 <img src={post.author.image_file} alt={post.author.username} className="author-image" />
-                <span>{post.author.username}</span>
-                <span>({post.author.email})</span>
+                <span className="post-username">{post.author.username}</span> • <span className="post-location">{post.location}</span>
               </div>
             </div>
           </div>

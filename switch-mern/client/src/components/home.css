@@ -56,3 +56,10 @@
     color: white;
   }
   
+  .post-location {
+    margin-left: 5px; 
+  }
+  
+  .post-username {
+    margin-right: 5px; 
+  }

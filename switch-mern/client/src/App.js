@@ -15,9 +15,9 @@ function App() {
       content: 'Selling old textbooks in great condition.',
       price: 500,
       date_posted: '2024-10-01T12:00:00',
+      location: 'North-Campus',
       author: {
         username: 'john_doe',
-        email: 'john@example.com',
         image_file: 'john_profile.jpg',
       },
       image_file: 'books_for_sale.jpg',
@@ -28,9 +28,9 @@ function App() {
       content: 'Barely used acoustic guitar available for sale.',
       price: 3000,
       date_posted: '2024-10-02T15:00:00',
+      location: 'West-Campus',
       author: {
         username: 'jane_doe',
-        email: 'jane@example.com',
         image_file: 'jane_profile.jpg',
       },
       image_file: 'guitar_sale.jpg',
@@ -41,9 +41,9 @@ function App() {
       content: 'Barely used acoustic guitar available for sale.',
       price: 3000,
       date_posted: '2024-10-02T15:00:00',
+      location: 'East-Campus',
       author: {
         username: 'jane_doe',
-        email: 'jane@example.com',
         image_file: 'jane_profile.jpg',
       },
       image_file: 'guitar_sale.jpg',
@@ -54,9 +54,9 @@ function App() {
       content: 'Barely used acoustic guitar available for sale.',
       price: 3000,
       date_posted: '2024-10-02T15:00:00',
+      location: 'South-Campus',
       author: {
         username: 'jane_doe',
-        email: 'jane@example.com',
         image_file: 'jane_profile.jpg',
       },
       image_file: 'guitar_sale.jpg',
