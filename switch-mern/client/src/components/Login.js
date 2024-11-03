@@ -1,4 +1,3 @@
-// LoginComponent.jsx
 import React, { useState } from 'react';
 import './Form.css';
 
@@ -6,15 +5,23 @@ const LoginComponent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
-  // eslint-disable-next-line
   const [errors, setErrors] = useState({ email: '', password: '' });
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Add your login logic here
   };
 
   return (
     <div className="content-section">
+      {/* Navigation Bar */}
+      <nav className="navbar">
+        <button onClick={() => window.location.href = '/home'}>Home</button>
+        <button onClick={() => window.location.href = '/register'}>Register</button>
+        <button onClick={() => window.location.href = '/login'}>Login</button>
+        <button onClick={() => window.location.href = '/hotitems'}>Hot Items</button>
+      </nav>
+
       <form onSubmit={handleSubmit}>
         <fieldset className="form-group">
           <legend className="border-bottom mb-4">Log In</legend>

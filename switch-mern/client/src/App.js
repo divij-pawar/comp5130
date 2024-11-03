@@ -4,6 +4,7 @@ import About from './components/About';
 import Login from './components/Login';
 import Register from './components/Register';
 import Home from './components/Home';
+import HotItems from './components/HotItems'; // Importing HotItems component
 import './components/main.css'; // Assuming global CSS for the app
 
 function App() {
@@ -61,6 +62,11 @@ function App() {
         <Route
           path="/home"
           element={<Home posts={posts} pagination={pagination} onPageChange={handlePageChange} />}
+        />
+        {/* HotItems route */}
+        <Route
+          path="/hotitems"
+          element={<HotItems posts={posts} pagination={pagination} onPageChange={handlePageChange} />}
         />
         {/* Default route redirects to Home */}
         <Route
