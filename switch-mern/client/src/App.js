@@ -4,8 +4,9 @@ import About from './components/About';
 import Login from './components/Login';
 import Register from './components/Register';
 import Home from './components/Home';
+import Account from './components/Account';
 import HotItems from './components/HotItems'; // Importing HotItems component
-import './components/main.css'; // Assuming global CSS for the app
+import './components/style/main.css'; // Assuming global CSS for the app
 
 function App() {
   const [posts, setPosts] = useState([]);
@@ -58,6 +59,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/account" element={<Account />} />
         {/* Home route with posts and pagination passed */}
         <Route
           path="/home"

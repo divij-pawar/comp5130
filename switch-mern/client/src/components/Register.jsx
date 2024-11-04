@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import './Form.css';
+import './style/Form.css';
+import Navbar from './Navbar';
 
 const RegisterComponent = () => {
   const [username, setUsername] = useState('');
@@ -81,13 +82,7 @@ const RegisterComponent = () => {
 
   return (
     <div className="content-section">
-      {/* Navigation Bar */}
-      <nav className="navbar">
-        <button onClick={() => window.location.href = '/home'}>Home</button>
-        <button onClick={() => window.location.href = '/register'}>Register</button>
-        <button onClick={() => window.location.href = '/login'}>Login</button>
-        <button onClick={() => window.location.href = '/hotitems'}>Hot Items</button>
-      </nav>
+      <Navbar /> {/* Add Navbar here */}
 
       <form onSubmit={handleSubmit}>
         <fieldset className="form-group">

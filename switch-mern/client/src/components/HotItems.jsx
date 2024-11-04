@@ -1,5 +1,6 @@
 import React from 'react';
-import './home.css';
+import './style/home.css';
+import Navbar from './Navbar';
 
 const Home = ({ posts, pagination, onPageChange }) => {
   const { currentPage, totalPages } = pagination;
@@ -19,13 +20,7 @@ const Home = ({ posts, pagination, onPageChange }) => {
 
   return (
     <div className="home-container">
-      {/* Navigation Bar */}
-      <nav className="navbar">
-        <button onClick={() => window.location.href = '/home'}>Home</button>
-        <button onClick={() => window.location.href = '/register'}>Register</button>
-        <button onClick={() => window.location.href = '/login'}>Login</button>
-        <button onClick={() => window.location.href = '/hotitems'}>Hot Items</button>
-      </nav>
+      <Navbar /> {/* Add Navbar here */}
 
       <h1>Hot Items</h1>
 
