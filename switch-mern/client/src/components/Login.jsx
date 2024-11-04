@@ -1,6 +1,8 @@
+// Login.jsx
 import React, { useState } from 'react';
 import './style/Form.css';
 import Navbar from './Navbar';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const LoginComponent = () => {
   const [email, setEmail] = useState('');
@@ -8,18 +10,58 @@ const LoginComponent = () => {
   const [remember, setRemember] = useState(false);
   const [errors, setErrors] = useState({ email: '', password: '' });
 
-  const handleSubmit = (e) => {
+  // Add state to handle loading and success/error messages
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const navigate = useNavigate(); // Initialize navigate
+
+  // Handle login submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your login logic here
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:3000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const { token } = data;
+
+        // Store JWT token
+        if (remember) {
+          localStorage.setItem('token', token);  // Use local storage if "remember me" is checked
+        } else {
+          sessionStorage.setItem('token', token); // Otherwise, use session storage
+        }
+
+        // Redirect to the homepage
+        navigate('/home');
+      } else {
+        setError(data.message || 'Login failed');
+      }
+    } catch (err) {
+      console.error('Login error:', err); 
+      setError('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="content-section">
-      <Navbar /> {/* Add Navbar here */}
+      <Navbar />
 
       <form onSubmit={handleSubmit}>
         <fieldset className="form-group">
           <legend className="border-bottom mb-4">Log In</legend>
+
+          {error && <div className="alert alert-danger">{error}</div>}
 
           <div className="form-group">
             <label htmlFor="email" className="form-control-label">Email</label>
@@ -70,7 +112,9 @@ const LoginComponent = () => {
         </fieldset>
 
         <div className="form-group">
-          <button type="submit" className="btn btn-dark">Log In</button>
+          <button type="submit" className="btn btn-dark" disabled={loading}>
+            {loading ? 'Logging in...' : 'Log In'}
+          </button>
         </div>
       </form>
       <small className="text-muted">
