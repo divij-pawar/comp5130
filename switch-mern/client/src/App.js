@@ -18,7 +18,7 @@ function App() {
   const fetchPosts = async (page = 1) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:3000/api/posts?page=${page}&limit=${pagination.limit}`);
+      const response = await fetch(`http://localhost:5000/api/posts?page=${page}&limit=${pagination.limit}`);
       if (!response.ok) {
         throw new Error('Failed to fetch posts');
       }

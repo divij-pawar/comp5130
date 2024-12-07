@@ -20,7 +20,7 @@ const Home = ({ posts, pagination, onPageChange }) => {
 
   return (
     <div className="home-container">
-      <Navbar /> {/* Add Navbar here */}
+      <Navbar /> {}
 
       <h1>Latest Posts</h1>
 

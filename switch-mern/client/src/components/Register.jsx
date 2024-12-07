@@ -153,11 +153,6 @@ const RegisterComponent = () => {
               </div>
             )}
           </div>
-
-
-
-          
-
           <div className="form-group">
             <label htmlFor="imageFile" className="form-control-label">Profile Image</label>
             <input
