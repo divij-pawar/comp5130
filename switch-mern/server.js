@@ -18,7 +18,6 @@ app.use(express.json());
 
 // Debugging middleware to log request headers
 app.use((req, res, next) => {
-    console.log('Request Headers:', req.headers); // Log the request headers
     next(); // Proceed to the next middleware or route handler
 });
 

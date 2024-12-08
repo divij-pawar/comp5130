@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import About from './components/About';
-import Login from './components/Login';
-import Register from './components/Register';
-import Home from './components/Home';
-import Account from './components/Account';
-import HotItems from './components/HotItems'; // Importing HotItems component
-import './components/style/main.css'; // Assuming global CSS for the app
+import About from './pages/About';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Home from './pages/Home';
+import Account from './pages/Account';
+import HotItems from './pages/HotItems'; // Importing HotItems component
+import './styles/main.css'; // Assuming global CSS for the app
 
 function App() {
   const [posts, setPosts] = useState([]);

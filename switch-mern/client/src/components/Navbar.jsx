@@ -1,6 +1,6 @@
 // Navbar.jsx
 import React from 'react';
-import './style/home.css'; // Use a CSS file for styling the navbar
+import '../styles/home.css'; // Use a CSS file for styling the navbar
 
 const Navbar = () => {
   return (
