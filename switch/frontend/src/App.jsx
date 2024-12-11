@@ -8,6 +8,7 @@ import Services from './pages/Services';
 import Contact from './pages/Contact';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
+import CreatePost from './pages/CreatePost';
 import './App.css';
 
 function App() {
@@ -67,6 +68,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/createpost" element={<CreatePost />} />
           </Routes>
         </main>
         <Footer />
