@@ -1,27 +1,35 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const Home = ({ posts }) => {
+const Home = () => {
+  const [posts, setPosts] = useState([]); // State to hold posts
   const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 4; // Adjust the number of posts per page
+  const postsPerPage = 8; // Number of posts per page
+  const [totalPages, setTotalPages] = useState(1); // Total pages for pagination
 
-  // Calculate the index of the first and last posts on the current page
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  // Function to fetch posts from the API
+  const fetchPosts = async (page) => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/posts', {
+        params: {
+          page: page,
+          limit: postsPerPage,
+        },
+      });
+      setPosts(response.data.posts); // Update posts state
+      setTotalPages(response.data.pagination.totalPages); // Update total pages
+    } catch (err) {
+      console.error('Error fetching posts:', err);
+    }
+  };
 
-  // Use memoization to calculate current posts only when necessary
-  const currentPosts = useMemo(() => {
-    return posts.slice(indexOfFirstPost, indexOfLastPost);
-  }, [currentPage, posts]);
+  // Fetch posts when the component mounts or when currentPage changes
+  useEffect(() => {
+    fetchPosts(currentPage);
+  }, [currentPage]);
 
   // Handle page changes
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // Fallback image URL
-  const getImageSrc = (imageFile) => {
-     return imageFile && imageFile.trim() !== ''
-      ? `http://localhost:5000/uploads/${imageFile}`
-      : `http://localhost:5000/uploads/default.jpg`;  // Default fallback image
-  };
 
   return (
     <div className="container">
@@ -33,20 +41,17 @@ const Home = ({ posts }) => {
       {/* Render posts */}
       <div className="posts-list">
         {Array.isArray(posts) && posts.length > 0 ? (
-          currentPosts.map((post) => (
+          posts.map((post) => (
             <div key={post._id} className="post-card">
               <div className="post-details">
                 <h3>{post.title}</h3>
                 <p>Posted: {new Date(post.date_posted).toLocaleDateString()}</p>
                 <p>Price: ${post.price}</p>
-
-                {/* Image with fallback for missing images */}
                 <img 
-                  src={getImageSrc(post.image_file)} 
+                  src={`http://localhost:5000/uploads/${post.image_file || 'default.jpg'}`} 
                   alt={post.title} 
                   className="post-image"
                 />
-
                 <p>{post.content}</p>
                 <div className="post-author">
                   <span className="post-username">{post.author.username}</span> •
@@ -62,7 +67,7 @@ const Home = ({ posts }) => {
 
       {/* Pagination controls */}
       <div className="pagination">
-        {Array.from({ length: Math.ceil(posts.length / postsPerPage) }, (_, index) => (
+        {Array.from({ length: totalPages }, (_, index) => (
           <button
             key={index}
             onClick={() => paginate(index + 1)}

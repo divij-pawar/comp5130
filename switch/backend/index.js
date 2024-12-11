@@ -6,6 +6,7 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 const http = require('http');  // Import http for Socket.io integration
 const socketIo = require('socket.io'); // Import socket.io
 require('dotenv').config();
@@ -66,6 +67,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 // Mongoose schema for Post
 const postSchema = new mongoose.Schema({
+    id: { type: String, default: uuidv4, unique: true },
     title: { type: String, required: true },
     content: { type: String, required: true },
     price: { type: Number, required: true },
@@ -82,8 +84,8 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    firstName: { type: String, default: '' },  // Default empty string if not provided
-    lastName: { type: String, default: '' },   // Default empty string if not provided
+    firstName: { type: String, default: '' },
+    lastName: { type: String, default: '' }, 
 });
 
 // Mongoose models
@@ -112,39 +114,69 @@ app.get('/', (req, res) => {
 // POST endpoint to create a new post
 app.post('/api/posts', authenticateToken, upload.single('image_file'), async (req, res) => {
     const { title, content, price, date_posted, location } = req.body;
-    const imageFile = req.file ? req.file.filename : null; // Get the filename of the uploaded image
-    const author = { username: req.user.username }; // Use authenticated user's username as author
+    const imageFile = req.file ? req.file.filename : null;
+    const author = { username: req.user.username };
 
     // Validate required fields
     if (!title || !content || !price || !date_posted || !location || !imageFile) {
-        return res.status(400).json({ message: 'All fields are required.' });
+        return res.status(400).json({
+            message: 'All fields are required, including a valid image file.',
+        });
+    }
+
+    // Validate price and date_posted
+    const numericPrice = parseFloat(price);
+    const parsedDate = new Date(date_posted);
+
+    if (isNaN(numericPrice)) {
+        return res.status(400).json({ message: 'Price must be a valid number.' });
+    }
+    if (isNaN(parsedDate.getTime())) {
+        return res.status(400).json({ message: 'Invalid date format.' });
+    }
+
+    // Validate image file type (optional)
+    if (req.file && !['image/jpeg', 'image/png'].includes(req.file.mimetype)) {
+        return res.status(400).json({ message: 'Invalid file type. Only JPEG and PNG are allowed.' });
     }
 
     try {
         const newPost = new Post({
+            id: uuidv4(),
             title,
             content,
-            price,
-            date_posted: new Date(date_posted),
+            price: numericPrice,
+            date_posted: parsedDate,
             location,
             author,
-            image_file: imageFile, // Store the image filename in the post document
+            image_file: imageFile,
         });
 
         await newPost.save();
-        res.status(201).json(newPost);
+
+        res.status(201).json({
+            id: newPost.id,
+            title: newPost.title,
+            content: newPost.content,
+            price: newPost.price,
+            date_posted: newPost.date_posted,
+            location: newPost.location,
+            author: newPost.author.username,
+            image_file: newPost.image_file,
+        });
     } catch (error) {
-        console.error(error);
+        console.error('Error creating post:', { error, body: req.body, file: req.file });
         res.status(500).json({ message: 'Server error.' });
     }
 });
 
-// GET endpoint to fetch all existing posts
+// GET endpoint to fetch posts with pagination
 app.get('/api/posts', async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5;
         const skip = (page - 1) * limit;
+
         const totalPosts = await Post.countDocuments();
         const posts = await Post.find().skip(skip).limit(limit);
         const totalPages = Math.ceil(totalPosts / limit);
@@ -159,9 +191,11 @@ app.get('/api/posts', async (req, res) => {
             },
         });
     } catch (err) {
-        res.status(500).json({ message: 'Error fetching posts' });
+        res.status(500).json({ message: `Error fetching posts: ${err.message}` });
     }
 });
+
+
 
 // PUT endpoint to update an existing post
 app.put('/api/posts/:id', authenticateToken, upload.single('image_file'), async (req, res) => {

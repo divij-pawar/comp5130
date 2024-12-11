@@ -265,7 +265,8 @@ main {
 .submit-button:hover {
   background-color: #ea580c;
 }
-/* Posts Layout - 4 Column Grid */
+
+/* Posts Layout - Square Cards */
 .posts-list {
   display: grid;
   grid-template-columns: repeat(4, 1fr); /* Creates 4 equal columns */
@@ -279,6 +280,8 @@ main {
   overflow: hidden;
 }
 
+/* Post Image Styles */
+/* Post Image Styles */
 .post-image {
   width: 100%;
   height: auto;
@@ -301,18 +304,16 @@ main {
 
 .post-author {
   display: flex;
+  gap: 5px;
   align-items: center;
   margin-top: 10px;
-  
 }
 
 .post-username {
   font-weight: bold;
-  margin-right: 5px; 
 }
 
 .post-location {
-  margin-left: 5px; 
   color: #777;
 }
 
