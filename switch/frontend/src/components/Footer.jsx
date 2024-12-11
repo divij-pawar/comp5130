@@ -21,7 +21,7 @@ function Footer() {
             <h3>Quick Links</h3>
             <ul>
               <li><Link to="/home">Home</Link></li>
-              <li><Link to="/hot-items">Hot Items</Link></li>
+              <li><Link to="/hotitems">Hot Items</Link></li>
             </ul>
           </div>
           <div className="footer-section">

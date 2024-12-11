@@ -74,6 +74,7 @@ function Navbar() {
           <Link to="/about" className="navbar-link">About</Link>
           {username && <Link to="/account" className="navbar-link">Account</Link>} {/* Show Account if authenticated */}
           {username && <Link to="/createpost" className="navbar-link">Create Post</Link>} {/* Show Create Post if authenticated */}
+          {username && <Link to="/chat" className="navbar-link">Chat</Link>} {/* Show Chat if authenticated */}
           <Link to="/contact" className="navbar-link">Contact</Link>
         </div>
 
