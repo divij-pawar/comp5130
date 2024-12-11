@@ -2,25 +2,24 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const LoginComponent = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState(''); // Change from email to username
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
-  const [errors, setErrors] = useState({ email: '', password: '' });
-
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Initialize navigate function
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(null); // Reset any previous error
 
     try {
-      const response = await fetch('http://localhost:3000/api/login', {
+      const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ username, password }),
       });
 
       const data = await response.json();
@@ -28,15 +27,17 @@ const LoginComponent = () => {
       if (response.ok) {
         const { token } = data;
 
+        // Save token to localStorage or sessionStorage based on 'remember'
         if (remember) {
-          localStorage.setItem('token', token);
+          localStorage.setItem('token', token); // Store token in localStorage if "remember me" is checked
         } else {
-          sessionStorage.setItem('token', token);
+          sessionStorage.setItem('token', token); // Store token in sessionStorage if not checked
         }
 
+        // Navigate to the home page or dashboard
         navigate('/home');
       } else {
-        setError(data.message || 'Login failed');
+        setError(data.message || 'Invalid username or password.');
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -51,24 +52,19 @@ const LoginComponent = () => {
       <div className="signup-form">
         <h2 className="signup-title">Log In</h2>
 
-        {error && <div className="alert alert-danger">{error}</div>}
+        {error && <div className="error-message">{error}</div>} {/* Error message in red */}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email" className="form-label">Email</label>
+            <label htmlFor="username" className="form-label">Username</label>
             <input
-              type="email"
-              id="email"
+              type="text"
+              id="username"
               className="form-input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
-            {errors.email && (
-              <div className="invalid-feedback">
-                <span>{errors.email}</span>
-              </div>
-            )}
           </div>
 
           <div className="form-group">
@@ -81,11 +77,6 @@ const LoginComponent = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            {errors.password && (
-              <div className="invalid-feedback">
-                <span>{errors.password}</span>
-              </div>
-            )}
           </div>
 
           <div className="form-group remember">
@@ -109,7 +100,7 @@ const LoginComponent = () => {
         </form>
 
         <small className="text-muted">
-          Need An Account? <a href="/signup">Sign Up Now</a>
+          Need an account? <a href="/signup">Sign Up Now</a>
         </small>
       </div>
     </div>
