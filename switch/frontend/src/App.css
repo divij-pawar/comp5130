@@ -225,3 +225,85 @@ main {
 .submit-button:hover {
   background-color: #ea580c;
 }
+/* Posts Layout - 4 Column Grid */
+.posts-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Creates 4 equal columns */
+  gap: 20px; /* Adds space between grid items */
+}
+
+.post-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.post-image {
+  width: 100%;
+  height: auto;
+  border-bottom: 2px solid #eee;
+}
+
+.post-details {
+  padding: 15px;
+}
+
+.post-details h3 {
+  font-size: 1.25rem;
+  margin: 10px 0;
+}
+
+.price {
+  font-weight: bold;
+  color: #f97316;
+}
+
+.post-author {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.author-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.post-username {
+  font-weight: bold;
+}
+
+.post-location {
+  color: #777;
+}
+
+.time-posted {
+  font-size: 0.875rem;
+  color: #888;
+  margin-top: 5px;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.pagination button {
+  background-color: #f97316;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
+.pagination button:hover {
+  background-color: #ea580c;
+}
