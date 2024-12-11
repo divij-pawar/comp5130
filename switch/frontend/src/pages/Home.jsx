@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
 const Home = ({ posts }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -8,11 +8,20 @@ const Home = ({ posts }) => {
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
 
-  // Get the current posts to display on the page
-  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+  // Use memoization to calculate current posts only when necessary
+  const currentPosts = useMemo(() => {
+    return posts.slice(indexOfFirstPost, indexOfLastPost);
+  }, [currentPage, posts]);
 
   // Handle page changes
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Fallback image URL
+  const getImageSrc = (imageFile) => {
+     return imageFile && imageFile.trim() !== ''
+      ? `http://localhost:5000/uploads/${imageFile}`
+      : `http://localhost:5000/uploads/default.jpg`;  // Default fallback image
+  };
 
   return (
     <div className="container">
@@ -23,21 +32,23 @@ const Home = ({ posts }) => {
 
       {/* Render posts */}
       <div className="posts-list">
-        {currentPosts.length > 0 ? (
+        {Array.isArray(posts) && posts.length > 0 ? (
           currentPosts.map((post) => (
             <div key={post._id} className="post-card">
-              <img src={post.image_file} alt={post.title} className="post-image" />
               <div className="post-details">
                 <h3>{post.title}</h3>
-                <p>{post.content}</p>
+                <p>Posted: {new Date(post.date_posted).toLocaleDateString()}</p>
                 <p>Price: ${post.price}</p>
-                <p>Date Posted: {new Date(post.date_posted).toLocaleDateString()}</p>
+
+                {/* Image with fallback for missing images */}
+                <img 
+                  src={getImageSrc(post.image_file)} 
+                  alt={post.title} 
+                  className="post-image"
+                />
+
+                <p>{post.content}</p>
                 <div className="post-author">
-                  <img
-                    src={post.author.image_file}
-                    alt={post.author.username}
-                    className="author-image"
-                  />
                   <span className="post-username">{post.author.username}</span> •
                   <span className="post-location">{post.location}</span>
                 </div>
@@ -55,6 +66,7 @@ const Home = ({ posts }) => {
           <button
             key={index}
             onClick={() => paginate(index + 1)}
+            disabled={currentPage === index + 1}
             className={`page-button ${currentPage === index + 1 ? 'active' : ''}`}
           >
             {index + 1}

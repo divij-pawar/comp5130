@@ -33,12 +33,13 @@ $ npm run dev
 # Features
 <ul>
 <li> jwt tokens ✅
-<li> authorizations
+<li> authorizations ✅
 <li>create post✅
-<li>logout button
+<li>logout button ✅
 <li>footer✅
 <li>post page
-<li>user images
-<li>product images
+<li>user images ✅ removed
+<li>product images ✅
 <li>account settings page✅
 <li>reset password
+<li> chat?
