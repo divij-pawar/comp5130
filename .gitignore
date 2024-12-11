@@ -1,5 +1,7 @@
 switch/backend/node_modules/
 switch/frontend/node_modules/
 *.jpg
+
 .env
 switch/backend/uploads/*.png
+switch/backend/uploads/*.jfif

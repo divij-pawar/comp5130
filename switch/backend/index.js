@@ -7,13 +7,13 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const http = require('http');  // Import http for Socket.io integration
-const socketIo = require('socket.io'); // Import socket.io
+const http = require('http');
+const socketIo = require('socket.io');
 require('dotenv').config();
 
 const app = express();
-const server = http.createServer(app); // Create an HTTP server for Socket.io
-const io = socketIo(server); // Initialize Socket.io on the server
+const server = http.createServer(app);
+const io = socketIo(server);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -35,11 +35,24 @@ io.on('connection', (socket) => {
     console.log('A user connected');
 
     // Listen for chat messages from the client
-    socket.on('chatMessage', (message) => {
+    socket.on('chatMessage', async (message) => {
         console.log('Received message:', message);
 
-        // Broadcast the message to all connected clients
-        io.emit('chatMessage', message);
+        // Save the message to the database
+        const newMessage = new Message({
+            sender: message.sender,
+            content: message.content,
+            timestamp: new Date(),
+        });
+
+        try {
+            await newMessage.save();
+            console.log('Message saved to database:', newMessage);
+            // Broadcast the message to all connected clients
+            io.emit('chatMessage', message);
+        } catch (error) {
+            console.error('Error saving message to database:', error);
+        }
     });
 
     // Handle disconnection
@@ -47,6 +60,7 @@ io.on('connection', (socket) => {
         console.log('User disconnected');
     });
 });
+
 // Set up multer storage configuration
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -64,6 +78,15 @@ const upload = multer({ storage: storage });
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log(err));
+
+// Mongoose schema for Message
+const messageSchema = new mongoose.Schema({
+    sender: { type: String, required: true },
+    content: { type: String, required: true },
+    timestamp: { type: Date, default: Date.now }
+});
+
+const Message = mongoose.model('Message', messageSchema);
 
 // Mongoose schema for Post
 const postSchema = new mongoose.Schema({
@@ -85,7 +108,7 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     firstName: { type: String, default: '' },
-    lastName: { type: String, default: '' }, 
+    lastName: { type: String, default: '' },
 });
 
 // Mongoose models
@@ -109,6 +132,16 @@ function authenticateToken(req, res, next) {
 // Routes
 app.get('/', (req, res) => {
     res.send('Welcome to Switch!');
+});
+
+// Chat messages API: GET route to fetch all messages
+app.get('/api/messages', async (req, res) => {
+    try {
+        const messages = await Message.find().sort({ timestamp: -1 }); // Get messages sorted by timestamp, most recent first
+        res.json(messages);
+    } catch (err) {
+        res.status(500).json({ message: `Error fetching messages: ${err.message}` });
+    }
 });
 
 // POST endpoint to create a new post
