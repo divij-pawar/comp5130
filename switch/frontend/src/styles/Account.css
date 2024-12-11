@@ -1,0 +1,76 @@
+/* Account Page Container */
+.account-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 64px - 300px); /* Adjusted for navbar and footer */
+    background-color: white; /* Matches global background */
+    padding: 20px;
+  }
+  
+  /* Form Styling */
+  .account-form {
+    background-color: white;
+    padding: 32px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .account-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #f97316; /* Matches the global orange theme */
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  
+  /* Form Group */
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  .form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  
+  /* Input Fields */
+  .form-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db; /* Matches global border */
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .form-input:focus {
+    outline: none;
+    border-color: #f97316; /* Highlight with theme color */
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2); /* Matches theme */
+  }
+  
+  /* Submit Button */
+  .submit-button {
+    width: 100%;
+    background-color: #f97316; /* Matches global theme */
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .submit-button:hover {
+    background-color: #ea580c; /* Slightly darker shade */
+  }
+  
+  /* File Input Styling (Optional) */
+  input[type="file"].form-input {
+    padding: 6px;
+  }
+  

@@ -9,7 +9,7 @@ This project uses Atlas to host the MongoDB database. You can signup and get you
 
 ```bash
 $ git clone https://github.com/divij-pawar/comp5130.git
-$ cd comp5130/switch-mern
+$ cd comp5130/switch
 $ npm install 
 $ touch .env
 $ echo MONGO_URI= (your mongodb uri here) >> .env
@@ -20,12 +20,25 @@ $ npm install
 
 ## Usage
 ### Start the server
-In $ ../comp5130/switch-mern
+In $ ../comp5130/switch/backend
  ```bash
 $ npm run dev
  ```
  ### Start the client
-In $../comp5130/switch-mern/client
+In $../comp5130/switch/frontend
 ```bash
-$ npm start
+$ npm run dev
 ```
+
+# Features
+<ul>
+<li> jwt tokens ✅
+<li> authorizations
+<li>create post✅
+<li>logout button
+<li>footer✅
+<li>post page
+<li>user images
+<li>product images
+<li>account settings page✅
+<li>reset password

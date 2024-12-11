@@ -23,6 +23,7 @@ function Footer() {
             <ul>
               <li><Link to="/home">Home</Link></li>
               <li><Link to="/hot-items">Hot Items</Link></li>
+              <li><Link to="/createpost">Create Post</Link></li>
             </ul>
           </div>
           <div className="footer-section">

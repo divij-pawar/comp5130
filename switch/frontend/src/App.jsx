@@ -9,6 +9,7 @@ import Contact from './pages/Contact';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import CreatePost from './pages/CreatePost';
+import Account from './pages/Account';
 import './App.css';
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/createpost" element={<CreatePost />} />
+            <Route path="/account" element={<Account />} />
           </Routes>
         </main>
         <Footer />
