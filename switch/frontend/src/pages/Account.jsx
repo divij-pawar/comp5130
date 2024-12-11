@@ -1,5 +1,5 @@
-//Account.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Account.css';
 
 function Account() {
@@ -7,23 +7,95 @@ function Account() {
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [profilePicture, setProfilePicture] = useState(null);
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  // Fetch the user's current data when the component mounts
+  useEffect(() => {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    
+    if (!token) {
+      navigate('/');
+    } else {
+      // Fetch user data from the /api/users/me endpoint
+      fetch('http://localhost:5000/api/users/me', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // Prefill the form with user data, and ensure firstName/lastName are empty if not provided
+          setUsername(data.username);
+          setEmail(data.email);
+          setFirstName(data.firstName || ''); // Use empty string if no first name
+          setLastName(data.lastName || '');   // Use empty string if no last name
+        })
+        .catch((error) => {
+          console.error(error);
+          setError('Failed to fetch user data.');
+        });
+    }
+  }, [navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle account creation logic here
-    console.log('Account changes saved successfully.', { firstName, lastName, username, email, profilePicture, password });
-  };
+    setLoading(true);
+    setError('');
 
-  const handleFileChange = (e) => {
-    setProfilePicture(e.target.files[0]);
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    
+    if (!token) {
+      setError('Authentication required.');
+      setLoading(false);
+      return;
+    }
+
+    const updatedData = {
+      username,
+      email,
+      firstName,
+      lastName,
+    };
+
+    fetch('http://localhost:5000/api/users', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(updatedData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message) {
+          setError(data.message); // Display error message if any
+        } else {
+          console.log('Account updated successfully:', data);
+          alert('Account updated successfully!');
+          navigate('/account'); // Example redirect
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        setError('An error occurred while updating your account.');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
     <div className="account-container">
       <div className="account-form">
-        <h2 className="account-title">Account settings</h2>
+        <h2 className="account-title">Account Settings</h2>
+        
+        {error && <div className="error-message">{error}</div>} {/* Error message in red */}
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="firstName" className="form-label">First Name</label>
@@ -36,6 +108,7 @@ function Account() {
               required
             />
           </div>
+
           <div className="form-group">
             <label htmlFor="lastName" className="form-label">Last Name</label>
             <input
@@ -47,6 +120,7 @@ function Account() {
               required
             />
           </div>
+
           <div className="form-group">
             <label htmlFor="username" className="form-label">Username</label>
             <input
@@ -58,6 +132,7 @@ function Account() {
               required
             />
           </div>
+
           <div className="form-group">
             <label htmlFor="email" className="form-label">Email</label>
             <input
@@ -69,15 +144,7 @@ function Account() {
               required
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="profilePicture" className="form-label">Profile Picture</label>
-            <input
-              type="file"
-              id="profilePicture"
-              className="form-input"
-              onChange={handleFileChange}
-            />
-          </div>
+
           <div className="form-group">
             <label htmlFor="password" className="form-label">Password</label>
             <input
@@ -86,10 +153,13 @@ function Account() {
               className="form-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
+              placeholder="Leave empty to keep the same password"
             />
           </div>
-          <button type="submit" className="submit-button">Change Account settings</button>
+
+          <button type="submit" className="submit-button" disabled={loading}>
+            {loading ? 'Saving...' : 'Change Account Settings'}
+          </button>
         </form>
       </div>
     </div>

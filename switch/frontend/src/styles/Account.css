@@ -73,4 +73,10 @@
   input[type="file"].form-input {
     padding: 6px;
   }
+
+  .error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+  }
   
