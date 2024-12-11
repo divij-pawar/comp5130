@@ -203,6 +203,25 @@ app.post('/api/posts', authenticateToken, upload.single('image_file'), async (re
     }
 });
 
+// GET endpoint to fetch post by ID
+app.get('/api/posts/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Fetch post based on MongoDB's default _id
+        const post = await Post.findById(id);
+
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found.' });
+        }
+
+        res.json(post);
+    } catch (err) {
+        console.error(`Error fetching post with ID ${req.params.id}:`, err);
+        res.status(500).json({ message: `Error fetching post: ${err.message}` });
+    }
+});
+
 // GET endpoint to fetch posts with pagination
 app.get('/api/posts', async (req, res) => {
     try {

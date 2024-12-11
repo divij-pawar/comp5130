@@ -12,6 +12,7 @@ import Login from './pages/Login';
 import CreatePost from './pages/CreatePost';
 import Account from './pages/Account';
 import Chat from './components/Chat';
+import PostDetails from './pages/PostDetails'; // Import PostDetails component
 import './App.css';
 
 function App() {
@@ -65,9 +66,18 @@ function App() {
         <Navbar />
         <main>
           <Routes>
-            <Route path="/" element={<Home posts={posts} pagination={pagination} onPageChange={handlePageChange} />} />
-            <Route path="/home" element={<Home posts={posts} pagination={pagination} onPageChange={handlePageChange} />} />
-            <Route path="/hotitems" element={<Hotitems posts={posts} pagination={pagination} onPageChange={handlePageChange} />} />
+            <Route
+              path="/"
+              element={<Home posts={posts} pagination={pagination} onPageChange={handlePageChange} />}
+            />
+            <Route
+              path="/home"
+              element={<Home posts={posts} pagination={pagination} onPageChange={handlePageChange} />}
+            />
+            <Route
+              path="/hotitems"
+              element={<Hotitems posts={posts} pagination={pagination} onPageChange={handlePageChange} />}
+            />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/contact" element={<Contact />} />
@@ -75,7 +85,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/createpost" element={<CreatePost />} />
             <Route path="/account" element={<Account />} />
-            <Route path="/chat" element={<Chat />} /> {/* Add the Chat route */}
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/posts/:id" element={<PostDetails />} /> {/* New route for post details */}
           </Routes>
         </main>
         <Footer />
