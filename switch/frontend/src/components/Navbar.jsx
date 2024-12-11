@@ -70,7 +70,7 @@ function Navbar() {
         )}
 
         <div className="navbar-links">
-          <Link to="/hot-items" className="navbar-link">Hot Items</Link>
+          <Link to="/hotitems" className="navbar-link">Hot Items</Link>
           <Link to="/about" className="navbar-link">About</Link>
           {username && <Link to="/account" className="navbar-link">Account</Link>} {/* Show Account if authenticated */}
           {username && <Link to="/createpost" className="navbar-link">Create Post</Link>} {/* Show Create Post if authenticated */}

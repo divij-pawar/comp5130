@@ -38,6 +38,7 @@ $ npm run dev
 <li>logout button ✅
 <li>footer✅
 <li>post page
+<li>user posts/profile
 <li>user images ✅ removed
 <li>product images ✅
 <li>account settings page✅
