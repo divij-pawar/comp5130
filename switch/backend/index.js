@@ -1,10 +1,11 @@
-//index.js
-
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors'); // Import cors
+const multer = require('multer'); // Import multer for file handling
+const path = require('path'); // Import path to handle file paths
+const fs = require('fs'); // Import fs to check and create directories
 require('dotenv').config();
 
 const app = express();
@@ -15,11 +16,24 @@ app.use(cors({
     credentials: true // Allow credentials (like cookies) to be included in requests
 }));
 app.use(express.json());
+// Ensure the 'uploads' folder exists, create it if it doesn't
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir); // Create 'uploads' folder if it doesn't exist
+}
 
-// Debugging middleware to log request headers
-app.use((req, res, next) => {
-    next(); // Proceed to the next middleware or route handler
+// Set up multer storage configuration
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Destination folder for storing images
+    },
+    filename: (req, file, cb) => {
+        const fileName = Date.now() + path.extname(file.originalname); // Unique file name
+        cb(null, fileName);
+    }
 });
+
+const upload = multer({ storage: storage });
 
 // Database connection
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -28,7 +42,6 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 // Mongoose schema for Post
 const postSchema = new mongoose.Schema({
-    id: { type: Number, required: true, unique: true },
     title: { type: String, required: true },
     content: { type: String, required: true },
     price: { type: Number, required: true },
@@ -47,7 +60,7 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     firstName: { type: String, default: '' },  // Default empty string if not provided
     lastName: { type: String, default: '' },   // Default empty string if not provided
-  });
+});
 
 // Mongoose models
 const Post = mongoose.model('Post', postSchema);
@@ -73,25 +86,25 @@ app.get('/', (req, res) => {
 });
 
 // POST endpoint to create a new post
-app.post('/api/posts', authenticateToken, async (req, res) => {
-    const { id, title, content, price, date_posted, location, image_file } = req.body;
-    const author = { username: req.user.username, image_file: req.user.image_file }; // Use authenticated user's username as author
+app.post('/api/posts', authenticateToken, upload.single('image_file'), async (req, res) => {
+    const { title, content, price, date_posted, location } = req.body;
+    const imageFile = req.file ? req.file.filename : null; // Get the filename of the uploaded image
+    const author = { username: req.user.username }; // Use authenticated user's username as author
 
     // Validate required fields
-    if (!id || !title || !content || !price || !date_posted || !location || !image_file) {
+    if (!title || !content || !price || !date_posted || !location || !imageFile) {
         return res.status(400).json({ message: 'All fields are required.' });
     }
 
     try {
         const newPost = new Post({
-            id,
             title,
             content,
             price,
             date_posted: new Date(date_posted),
             location,
             author,
-            image_file,
+            image_file: imageFile, // Store the image filename in the post document
         });
 
         await newPost.save();
@@ -127,9 +140,10 @@ app.get('/api/posts', async (req, res) => {
 });
 
 // PUT endpoint to update an existing post
-app.put('/api/posts/:id', authenticateToken, async (req, res) => {
+app.put('/api/posts/:id', authenticateToken, upload.single('image_file'), async (req, res) => {
     const { id } = req.params;
-    const { title, content, price, date_posted, location, image_file } = req.body;
+    const { title, content, price, date_posted, location } = req.body;
+    const imageFile = req.file ? req.file.filename : null; // Get the filename of the uploaded image
 
     try {
         const post = await Post.findOne({ id: parseInt(id) });
@@ -147,7 +161,7 @@ app.put('/api/posts/:id', authenticateToken, async (req, res) => {
         // Update post
         const updatedPost = await Post.findOneAndUpdate(
             { id: parseInt(id) },
-            { title, content, price, date_posted: new Date(date_posted), location, image_file },
+            { title, content, price, date_posted: new Date(date_posted), location, image_file: imageFile || post.image_file },
             { new: true, runValidators: true }
         );
 
@@ -184,7 +198,6 @@ app.delete('/api/posts/:id', authenticateToken, async (req, res) => {
         res.status(500).json({ message: 'Server error.' });
     }
 });
-
 
 // Login endpoint
 app.post('/api/login', async (req, res) => {
@@ -311,7 +324,6 @@ app.get('/api/users/me', authenticateToken, async (req, res) => {
         res.status(500).json({ message: 'Server error.' });
     }
 });
-
 
 // Start the server
 const PORT = process.env.PORT || 5000;

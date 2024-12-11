@@ -1,7 +1,5 @@
-switch-mern/client/node_modules/
-switch-mern/node_modules/
-switch-mern/uploads/*.jpg
 switch/backend/node_modules/
 switch/frontend/node_modules/
-switch/uploads/*.jpg
+*.jpg
 .env
+switch/backend/uploads/*.png
