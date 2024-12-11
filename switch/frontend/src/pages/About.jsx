@@ -14,7 +14,7 @@ function About() {
           <b>get rid of your previous semester's books, scientific instruments, calculators, and other material you have.</b>
         </p>
       </div>
-      <h5 className="join-us">Hop on the trend, Join us <a href="/register">Now!</a></h5>
+      <h5 className="join-us">Hop on the trend, Join us <a href="/signup">Now!</a></h5>
     </div>
   );
 }

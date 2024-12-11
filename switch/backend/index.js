@@ -1,4 +1,4 @@
-//server.js
+//index.js
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -199,6 +199,7 @@ app.post('/api/login', async (req, res) => {
 
     try {
         const user = await User.findOne({ username });
+        console.log(password)
 
         // Check if user exists and if the password is correct
         if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -214,6 +215,43 @@ app.post('/api/login', async (req, res) => {
         res.status(500).json({ message: 'Server error.' });
     }
 });
+
+// Signup endpoint
+app.post('/api/signup', async (req, res) => {
+    const { username, email, password } = req.body;
+
+    // Validate required fields
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: 'Username, email, and password are required.' });
+    }
+
+    try {
+        // Check if a user with the same username or email already exists
+        const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Username or email already exists.' });
+        }
+
+        // Hash the password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create a new user
+        const newUser = new User({
+            username,
+            email,
+            password: hashedPassword, // Store the hashed password
+        });
+
+        await newUser.save();
+
+        // Send a success response
+        res.status(201).json({ message: 'User created successfully', user: { username, email } });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error.' });
+    }
+});
+
 
 // Protect any routes that require authentication with the authenticateToken middleware
 app.get('/api/protected', authenticateToken, (req, res) => {
