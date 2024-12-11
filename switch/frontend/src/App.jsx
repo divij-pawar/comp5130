@@ -10,6 +10,7 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import CreatePost from './pages/CreatePost';
 import Account from './pages/Account';
+import Chat from './components/Chat';
 import './App.css';
 
 function App() {
@@ -72,6 +73,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/createpost" element={<CreatePost />} />
             <Route path="/account" element={<Account />} />
+            <Route path="/chat" element={<Chat />} /> {/* Add the Chat route */}
           </Routes>
         </main>
         <Footer />

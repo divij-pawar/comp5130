@@ -2,28 +2,50 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const cors = require('cors'); // Import cors
-const multer = require('multer'); // Import multer for file handling
-const path = require('path'); // Import path to handle file paths
-const fs = require('fs'); // Import fs to check and create directories
+const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const http = require('http');  // Import http for Socket.io integration
+const socketIo = require('socket.io'); // Import socket.io
 require('dotenv').config();
 
 const app = express();
+const server = http.createServer(app); // Create an HTTP server for Socket.io
+const io = socketIo(server); // Initialize Socket.io on the server
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Middleware
 app.use(cors({
     origin: 'http://localhost:3000', // Allow requests from this origin
-    credentials: true // Allow credentials (like cookies) to be included in requests
+    credentials: true
 }));
 app.use(express.json());
+
 // Ensure the 'uploads' folder exists, create it if it doesn't
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir); // Create 'uploads' folder if it doesn't exist
+    fs.mkdirSync(uploadsDir);
 }
 
+// Socket.io: Listen for a new connection
+io.on('connection', (socket) => {
+    console.log('A user connected');
+
+    // Listen for chat messages from the client
+    socket.on('chatMessage', (message) => {
+        console.log('Received message:', message);
+
+        // Broadcast the message to all connected clients
+        io.emit('chatMessage', message);
+    });
+
+    // Handle disconnection
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
+});
 // Set up multer storage configuration
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
