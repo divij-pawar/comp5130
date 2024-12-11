@@ -13,7 +13,6 @@ function Footer() {
           <div className="footer-section">
             <h3>Account</h3>
             <ul>
-              <li><Link to="/account">Account</Link></li>
               <li><Link to="/login">Login</Link></li>
               <li><Link to="/signup">Sign Up</Link></li>
             </ul>
@@ -23,7 +22,6 @@ function Footer() {
             <ul>
               <li><Link to="/home">Home</Link></li>
               <li><Link to="/hot-items">Hot Items</Link></li>
-              <li><Link to="/createpost">Create Post</Link></li>
             </ul>
           </div>
           <div className="footer-section">
@@ -43,4 +41,3 @@ function Footer() {
 }
 
 export default Footer;
-

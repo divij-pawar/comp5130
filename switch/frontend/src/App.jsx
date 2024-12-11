@@ -64,6 +64,7 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Home posts={posts} pagination={pagination} onPageChange={handlePageChange} />} />
+            <Route path="/home" element={<Home posts={posts} pagination={pagination} onPageChange={handlePageChange} />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/contact" element={<Contact />} />

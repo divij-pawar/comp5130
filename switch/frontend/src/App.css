@@ -23,6 +23,13 @@ main {
   padding: 0 20px;
 }
 
+/* Style for the error message */
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
 /* Navbar Styles */
 .navbar {
   background-color: white;
@@ -33,7 +40,7 @@ main {
 
 .navbar-container {
   display: flex;
-  justify-content: space-between; /* Adjusted to keep signup button on the right */
+  justify-content: space-between; /* Keeps the items spaced apart */
   align-items: center;
   height: 64px;
   padding: 0 20px;
@@ -45,6 +52,7 @@ main {
   display: flex;
   align-items: center;
   text-decoration: none;
+  margin-right: 10px; /* Adjust this margin to control the space between logo and greeting */
 }
 
 .navbar-logo-image {
@@ -57,9 +65,13 @@ main {
   font-size: 28px;
   font-weight: bold;
   color: black;
-  margin-right: 40px;
+}
 
-
+.navbar-greeting {
+  font-size: 16px;
+  font-weight: 500;
+  color: black;
+  margin-left: 0; /* Remove any left margin to reduce space */
 }
 
 .navbar-links {
@@ -78,7 +90,8 @@ main {
   color: #f97316;
 }
 
-.signup-button {
+/* Signup and Logout Button Styles */
+.signup-button, .logout-button {
   background-color: #f97316;
   color: white;
   padding: 8px 16px;
@@ -86,11 +99,25 @@ main {
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
-  margin-left: auto; /* Pushes signup button to the far right */
+  margin-left: 20px; /* Space between links and button */
+  cursor: pointer;
 }
 
-.signup-button:hover {
+.signup-button:hover, .logout-button:hover {
   background-color: #ea580c;
+}
+
+/* Styling for when user is logged in */
+.navbar-container.logged-in .navbar-links {
+  flex-grow: 1; /* Ensures the links stretch to fill the space */
+}
+
+.navbar-container.logged-in .signup-button {
+  display: none; /* Hide the signup button when logged in */
+}
+
+.navbar-container.logged-in .logout-button {
+  display: block; /* Show the logout button when logged in */
 }
 
 /* Footer Styles */
