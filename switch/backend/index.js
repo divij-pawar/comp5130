@@ -35,8 +35,7 @@ const postSchema = new mongoose.Schema({
     date_posted: { type: Date, required: true },
     location: { type: String, required: true },
     author: {
-        username: { type: String, required: true },
-        image_file: { type: String, required: true },
+        username: { type: String, required: true }
     },
     image_file: { type: String, required: true },
 });
@@ -44,10 +43,11 @@ const postSchema = new mongoose.Schema({
 // Mongoose schema for User
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
-    password: { type: String, required: true }, // In a real application, passwords should be hashed
     email: { type: String, required: true, unique: true },
-    image_file: { type: String },
-});
+    password: { type: String, required: true },
+    firstName: { type: String, default: '' },  // Default empty string if not provided
+    lastName: { type: String, default: '' },   // Default empty string if not provided
+  });
 
 // Mongoose models
 const Post = mongoose.model('Post', postSchema);
@@ -73,11 +73,12 @@ app.get('/', (req, res) => {
 });
 
 // POST endpoint to create a new post
-app.post('/api/posts', async (req, res) => {
-    const { id, title, content, price, date_posted, location, author, image_file } = req.body;
+app.post('/api/posts', authenticateToken, async (req, res) => {
+    const { id, title, content, price, date_posted, location, image_file } = req.body;
+    const author = { username: req.user.username, image_file: req.user.image_file }; // Use authenticated user's username as author
 
     // Validate required fields
-    if (!id || !title || !content || !price || !date_posted || !location || !author || !image_file) {
+    if (!id || !title || !content || !price || !date_posted || !location || !image_file) {
         return res.status(400).json({ message: 'All fields are required.' });
     }
 
@@ -105,7 +106,7 @@ app.post('/api/posts', async (req, res) => {
 app.get('/api/posts', async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 5; // Default to 5 posts per page
+        const limit = parseInt(req.query.limit) || 5;
         const skip = (page - 1) * limit;
         const totalPosts = await Post.countDocuments();
         const posts = await Post.find().skip(skip).limit(limit);
@@ -126,20 +127,29 @@ app.get('/api/posts', async (req, res) => {
 });
 
 // PUT endpoint to update an existing post
-app.put('/api/posts/:id', async (req, res) => {
+app.put('/api/posts/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
-    const { title, content, price, date_posted, location, author, image_file } = req.body;
+    const { title, content, price, date_posted, location, image_file } = req.body;
 
     try {
-        const updatedPost = await Post.findOneAndUpdate(
-            { id: parseInt(id) },
-            { title, content, price, date_posted: new Date(date_posted), location, author, image_file },
-            { new: true, runValidators: true }
-        );
+        const post = await Post.findOne({ id: parseInt(id) });
 
-        if (!updatedPost) {
+        // Check if post exists
+        if (!post) {
             return res.status(404).json({ message: 'Post not found.' });
         }
+
+        // Check if the authenticated user is the author of the post
+        if (post.author.username !== req.user.username) {
+            return res.status(403).json({ message: 'You are not authorized to edit this post.' });
+        }
+
+        // Update post
+        const updatedPost = await Post.findOneAndUpdate(
+            { id: parseInt(id) },
+            { title, content, price, date_posted: new Date(date_posted), location, image_file },
+            { new: true, runValidators: true }
+        );
 
         res.json(updatedPost);
     } catch (error) {
@@ -149,49 +159,32 @@ app.put('/api/posts/:id', async (req, res) => {
 });
 
 // DELETE endpoint to remove a post
-app.delete('/api/posts/:id', async (req, res) => {
+app.delete('/api/posts/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
 
     try {
-        const deletedPost = await Post.findOneAndDelete({ id: parseInt(id) });
+        const post = await Post.findOne({ id: parseInt(id) });
 
-        if (!deletedPost) {
+        // Check if post exists
+        if (!post) {
             return res.status(404).json({ message: 'Post not found.' });
         }
 
-        res.status(204).send();
+        // Check if the authenticated user is the author of the post
+        if (post.author.username !== req.user.username) {
+            return res.status(403).json({ message: 'You are not authorized to delete this post.' });
+        }
+
+        // Delete post
+        await Post.findOneAndDelete({ id: parseInt(id) });
+
+        res.status(204).send(); // No content on successful deletion
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error.' });
     }
 });
 
-// POST endpoint to create a new user
-app.post('/api/users', async (req, res) => {
-    const { username, password, email, image_file } = req.body;
-
-    // Validate required fields
-    if (!username || !password || !email) {
-        return res.status(400).json({ message: 'Username, password, and email are required.' });
-    }
-
-    try {
-        // Hash the password before saving
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({
-            username,
-            password: hashedPassword, // Store the hashed password
-            email,
-            image_file,
-        });
-
-        await newUser.save();
-        res.status(201).json(newUser);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error.' });
-    }
-});
 
 // Login endpoint
 app.post('/api/login', async (req, res) => {
@@ -199,7 +192,6 @@ app.post('/api/login', async (req, res) => {
 
     try {
         const user = await User.findOne({ username });
-        console.log(password)
 
         // Check if user exists and if the password is correct
         if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -252,11 +244,74 @@ app.post('/api/signup', async (req, res) => {
     }
 });
 
+// PUT endpoint to update a user's account (excluding password)
+app.put('/api/users', authenticateToken, async (req, res) => {
+    const { username, email, firstName, lastName } = req.body;
 
-// Protect any routes that require authentication with the authenticateToken middleware
-app.get('/api/protected', authenticateToken, (req, res) => {
-    res.json({ message: 'This is a protected route', user: req.user });
+    // Make sure the user is authenticated and the token is valid
+    const { username: loggedInUsername } = req.user; // Extract username from the token
+
+    // Check if the user sent any field to update
+    if (!username && !email && !firstName && !lastName) {
+        return res.status(400).json({ message: 'At least one field (username, email, firstName, lastName) is required.' });
+    }
+
+    try {
+        // Check if the new username or email already exists (excluding the current user's data)
+        const existingUser = await User.findOne({
+            $or: [{ username, email }],
+            _id: { $ne: req.user._id } // Exclude the logged-in user's current username and email
+        });
+
+        // If the new username or email is different from the current one, throw an error
+        if (existingUser) {
+            if (existingUser.username !== username || existingUser.email !== email) {
+                return res.status(400).json({ message: 'Username or email is already taken.' });
+            }
+        }
+
+        // Update the user fields
+        const updatedUser = await User.findOneAndUpdate(
+            { username: loggedInUsername }, // Ensure we're updating the correct user
+            { username, email, firstName, lastName },
+            { new: true, runValidators: true } // Return the updated user and validate before updating
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // Return the updated user information (excluding password)
+        const { password, ...userData } = updatedUser.toObject();
+        res.json(userData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error.' });
+    }
 });
+
+
+// GET endpoint to fetch the authenticated user's details (excluding password)
+app.get('/api/users/me', authenticateToken, async (req, res) => {
+    try {
+        // Fetch the user from the database using the authenticated user's username
+        const user = await User.findOne({ username: req.user.username });
+
+        // Check if the user exists
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // Return user data excluding the password field
+        const { password, ...userData } = user.toObject();
+        res.json(userData);
+      // Send back the user data without the password
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error.' });
+    }
+});
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;
