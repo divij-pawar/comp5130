@@ -1,3 +1,4 @@
+# Switch Marketplace - A micro-marketplace for universities
 # Introduction
 This project involves creating a website where users can buy and sell items within their university campus. Each university acts as a local marketplace, enabling short-distance, in-person transactions. The platform's role is to connect buyers and sellers, without handling payments or order fulfillment.
 # What?
@@ -32,13 +33,13 @@ $ npm run dev
 
 # Features
 <ul>
-<li> jwt tokens ✅
-<li> authorizations ✅
+<li>jwt tokens ✅
+<li>authorizations ✅
 <li>create post✅
 <li>logout button ✅
 <li>footer✅
-<li>post page
-<li>user posts/profile
+<li>pagination✅
+<li>post page ✅
 <li>user images ✅ removed
 <li>product images ✅
 <li>account settings page✅
